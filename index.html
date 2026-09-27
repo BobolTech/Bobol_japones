@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bobol Technologies - Tu Negocio Digital</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0b0f19;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            color: #ffffff;
+        }
+
+        /* Contenedor tamaño celular estricto */
+        .phone-container {
+            width: 100%;
+            max-width: 410px;
+            height: 100vh;
+            max-height: 840px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 0px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+        }
+
+        @media (min-width: 450px) {
+            .phone-container {
+                border-radius: 36px;
+                height: 85vh;
+            }
+        }
+
+        /* Fondo animado Canvas */
+        #bgCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Contenido de la pantalla */
+        .content-wrapper {
+            position: relative;
+            z-index: 2;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        /* Cabecera */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            font-size: 1.1rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00ffcc, #0077ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 0.5px;
+        }
+
+        .step-indicator {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Cuerpo de la tarjeta */
+        .screen-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 1.55rem;
+            line-height: 1.25;
+            margin-bottom: 12px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        p, .bullet-point {
+            font-size: 0.92rem;
+            line-height: 1.45;
+            color: #cbd5e1;
+            margin-bottom: 10px;
+        }
+
+        .highlight-box {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 4px solid #00ffcc;
+            padding: 10px 14px;
+            border-radius: 0 8px 8px 0;
+            margin: 8px 0;
+            font-size: 0.88rem;
+        }
+
+        .grid-features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .feature-card h3 {
+            font-size: 0.88rem;
+            color: #00ffcc;
+            margin-bottom: 3px;
+        }
+
+        .feature-card p {
+            font-size: 0.76rem;
+            margin: 0;
+            color: #94a3b8;
+        }
+
+        /* Controles inferiores */
+        .footer-nav {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, #00ffcc, #0077ff);
+            color: #0b0f19;
+            box-shadow: 0 4px 15px rgba(0, 255, 204, 0.3);
+        }
+
+        .btn-next:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
+        }
+
+        .btn-whatsapp {
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="phone-container">
+        <!-- Canvas para el fondo animado estilo Matrix / partículas -->
+        <canvas id="bgCanvas"></canvas>
+
+        <div class="content-wrapper">
+            <!-- Cabecera -->
+            <div class="header">
+                <div class="logo">Bobol Technologies</div>
+                <div class="step-indicator" id="stepIndicator">Pantalla 1/5</div>
+            </div>
+
+            <!-- Cuerpo dinámico -->
+            <div class="screen-body" id="screenContent">
+                <!-- Se inyecta por JS -->
+            </div>
+
+            <!-- Navegación -->
+            <div class="footer-nav" id="footerNav">
+                <!-- Se inyecta por JS -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const screens = [
+            {
+                title: "¡Es hora de independizarte y promocionarte con tu propia plataforma!",
+                content: `
+                    <p>Las grandes apps de entrega se quedan hasta con el 30% de tus ventas. ¡No regales tu esfuerzo!</p>
+                    <div class="highlight-box">
+                        <b>Para todo tipo de negocios:</b> No solo fondas o comida; ideal para <b>jardineros, mecánicos, personas que lavan carros</b> y más servicios locales.
+                    </div>
+                    <p>Ten tu propio menú digital inteligente conectado directo a tu WhatsApp.</p>
+                `
+            },
+            {
+                title: "Cero comisiones. Ahorro real vs Uber Eats o Didi Foods",
+                content: `
+                    <p>Mientras otros te cobran comisión por cada cliente, con nosotros tus ganancias son íntegras para ti.</p>
+                    <div class="highlight-box">
+                        <b>Inversión transparente:</b><br>
+                        • Primer año: <b>$3,999 pesos</b>.<br>
+                        • A partir del 2do año: Solo <b>$3,588 pesos anuales</b> (¡equivalente a $299 al mes!).
+                    </div>
+                    <p style="font-size:0.85rem; color:#94a3b8;">Un costo mínimo que se paga solo con un par de servicios o pedidos al mes.</p>
+                `
+            },
+            {
+                title: "Estructura perfecta para tus servicios o productos",
+                content: `
+                    <p>Organiza tu catálogo exactamente como lo necesitas para impresionar a tus clientes:</p>
+                    <div class="grid-features">
+                        <div class="feature-card">
+                            <h3>3 a 5 Categorías</h3>
+                            <p>Secciones claras y ordenadas.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>5 Productos c/u</h3>
+                            <p>Imágenes reales de lo que vendes.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>Tu Propio Logo</h3>
+                            <p>Identidad 100% de tu negocio.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>Fotos Propias</h3>
+                            <p>Muestra tu calidad exacta.</p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "Fondos Vivos y Estacionales adaptados a tu gusto",
+                content: `
+                    <p>Dale vida fresca a tu menú digital cambiando los fondos animados según la época del año:</p>
+                    <div class="grid-features">
+                        <div class="feature-card">
+                            <h3>Estaciones</h3>
+                            <p>Primavera, Verano, Otoño, Invierno.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>Fechas Especiales</h3>
+                            <p>14 de Febrero, Día de las Madres, Navidad...</p>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.82rem; margin-top: 8px;">¡O el diseño personalizado que prefieras!</p>
+                `
+            },
+            {
+                title: "Control total de entregas y pagos directo a WhatsApp",
+                content: `
+                    <p>Tú decides cómo trabajas y operas tu negocio cada día:</p>
+                    <div class="highlight-box">
+                        • <b>Servicio a domicilio:</b> Actívalo o desactívalo a voluntad.<br>
+                        • <b>Formas de pago:</b> Efectivo o transferencia.<br>
+                        • <b>Pedidos automáticos:</b> Todo llega ordenado directo a tu WhatsApp.
+                    </div>
+                    <p style="font-weight: 600; color: #00ffcc; text-align: center; margin-top: 4px;">¿Te interesa digitalizar tu negocio hoy?</p>
+                `
+            }
+        ];
+
+        let currentScreen = 0;
+
+        // Configuración del Canvas Animado tipo Matrix / Partículas con cambios por pantalla
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+
+        function resize() {
+            width = canvas.width = canvas.offsetWidth;
+            height = canvas.height = canvas.offsetHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // Elementos visuales diferentes para cada pantalla al presionar siguiente
+        let particles = [];
+        function initMatrixBackground(screenIndex) {
+            particles = [];
+            const count = 45;
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    speed: Math.random() * 1.5 + 0.5,
+                    size: Math.random() * 3 + 1,
+                    char: String.fromCharCode(0x30A0 + Math.floor(Math.random() * 96)), // Estilo matriz / símbolos
+                    color: getMatrixColor(screenIndex)
+                });
+            }
+        }
+
+        function getMatrixColor(index) {
+            const palettes = [
+                ['#00ffcc', '#0077ff', 'rgba(0,255,204,0.3)'], // Pantalla 1: Turquesa/Azul
+                ['#ff0055', '#ff9900', 'rgba(255,0,85,0.3)'],   // Pantalla 2: Rojo/Naranja (Ahorro)
+                ['#9900ff', '#00ffff', 'rgba(153,0,255,0.3)'], // Pantalla 3: Morado/Cian (Categorías)
+                ['#00ff66', '#ffff00', 'rgba(0,255,102,0.3)'], // Pantalla 4: Verde/Amarillo (Estacional)
+                ['#00ffff', '#ffffff', 'rgba(0,255,255,0.4)']  // Pantalla 5: Cian brillante (Cierre/WhatsApp)
+            ];
+            return palettes[index % palettes.length];
+        }
+
+        function drawMatrix() {
+            ctx.clearRect(0, 0, width, height);
+            
+            particles.forEach(p => {
+                ctx.fillStyle = p.color[0];
+                ctx.font = `${Math.floor(p.size * 5 + 8)}px monospace`;
+                ctx.fillText(p.char, p.x, p.y);
+
+                p.y += p.speed;
+                if (p.y > height) {
+                    p.y = 0;
+                    p.x = Math.random() * width;
+                    p.char = String.fromCharCode(0x30A0 + Math.floor(Math.random() * 96));
+                }
+            });
+
+            requestAnimationFrame(drawMatrix);
+        }
+
+        function renderScreen() {
+            const data = screens[currentScreen];
+            document.getElementById('stepIndicator').innerText = `Pantalla ${currentScreen + 1}/${screens.length}`;
+            
+            document.getElementById('screenContent').innerHTML = `
+                <div>
+                    <h1>${data.title}</h1>
+                    ${data.content}
+                </div>
+            `;
+
+            const nav = document.getElementById('footerNav');
+            if (currentScreen === screens.length - 1) {
+                nav.innerHTML = `
+                    <button class="btn-back" onclick="prevScreen()">Atrás</button>
+                    <a href="https://wa.me/525652677560?text=Hola,%20me%20interesa%20tener%20mi%20plataforma%20con%20Bobol%20Technologies" target="_blank" class="btn-whatsapp">
+                        ¿Te interesa? ¡Escríbeme!
+                    </a>
+                `;
+            } else if (currentScreen === 0) {
+                nav.innerHTML = `
+                    <button class="btn-next" onclick="nextScreen()">Siguiente</button>
+                `;
+            } else {
+                nav.innerHTML = `
+                    <button class="btn-back" onclick="prevScreen()">Atrás</button>
+                    <button class="btn-next" onclick="nextScreen()">Siguiente</button>
+                `;
+            }
+
+            // Cambiar los dibujos y colores del fondo matrix al cambiar de pantalla
+            initMatrixBackground(currentScreen);
+        }
+
+        function nextScreen() {
+            if (currentScreen < screens.length - 1) {
+                currentScreen++;
+                renderScreen();
+            }
+        }
+
+        function prevScreen() {
+            if (currentScreen > 0) {
+                currentScreen--;
+                renderScreen();
+            }
+        }
+
+        // Inicializar
+        renderScreen();
+        drawMatrix();
+    </script>
+</body>
+</html>
